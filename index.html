@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador Interactivo de Paneles Fotovoltaicos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Application Structure Plan: The SPA will use a thematic, multi-section layout navigated by a fixed top navigation bar. Key sections will include:
+    1. Inicio: Overview.
+    2. Fundamentos: How PV works, system components (visual diagram).
+    3. Tipos de Paneles: Interactive comparison of panel technologies (using Chart.js for efficiency/lifespan) and detailed views.
+    4. Rendimiento y Factores: Explanation of irradiation, temperature, orientation, shading with illustrative charts.
+    5. Aplicaciones Diversas: Showcasing residential, industrial, off-grid, large-scale (Chart.js for plant capacities), and innovative uses (BIPV, flotante, etc.) through categorized content and visuals.
+    6. Sostenibilidad: Lifecycle impact (Chart.js for conceptual impact stages) and recycling.
+    7. Economía Solar: Costs, ROI, savings (Chart.js for financial comparisons), and incentives.
+    8. Futuro de la Solar: Emerging tech and trends.
+    9. Asesor Solar IA: New section for AI-powered Q&A using Gemini API.
+    This structure is chosen to guide the user logically from basic understanding to specific applications, economic considerations, and future outlook, making the comprehensive report content digestible and engaging. Interactions will focus on revealing details on demand and visualizing comparisons. The new AI section provides a direct, interactive knowledge retrieval tool. -->
+    <!-- Visualization & Content Choices:
+    * Report Info: Panel Types (Sec 3, Table 1) -> Goal: Compare -> Viz: Bar chart (Chart.js) for Efficiency, Lifespan; Interactive HTML table/cards for details. Interaction: Select panel type to view details. Justification: Easy comparison of key metrics.
+    * Report Info: Funcionamiento (Sec 2) -> Goal: Explain -> Viz: HTML/CSS diagram of photovoltaic effect & system components. Interaction: Static visual flow. Justification: Clear visual explanation of core concepts.
+    * Report Info: Factores de Rendimiento (Sec 4, Table 2) -> Goal: Inform -> Viz: Line chart (Chart.js) for Temp vs. Efficiency; Text summaries for other factors. Interaction: Static chart. Justification: Visualize key performance influencer.
+    * Report Info: Plantas Solares (Sec 5, Table 3) -> Goal: Showcase Scale -> Viz: Bar chart (Chart.js) for Plant Capacities; List/cards for details. Interaction: Static chart. Justification: Illustrate magnitude of large projects.
+    * Report Info: Impacto Ambiental (Sec 6, Table 4) -> Goal: Summarize -> Viz: Bar chart (Chart.js) for conceptual lifecycle impacts (positive/negative per stage). Interaction: Static chart. Justification: Visual overview of environmental aspects.
+    * Report Info: Aspectos Económicos (Sec 7, Table 5) -> Goal: Analyze -> Viz: Bar chart (Chart.js) for Cost/ROI/Amortización by installation type. Interaction: Static chart. Justification: Clear financial comparison.
+    * Report Info: Textual Summaries (all sections) -> Goal: Inform/Contextualize -> Viz: Structured HTML with Tailwind, collapsible sections. Interaction: Expand/collapse for details. Justification: Manage information density.
+    * Report Info: User Questions (New Section) -> Goal: Provide direct answers -> Viz: Text input and output area. Interaction: User types question, clicks button, LLM provides answer. Justification: Offers on-demand, flexible information retrieval beyond pre-defined content. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link.active { color: #f59e0b; border-bottom-color: #f59e0b; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .tab-button { transition: background-color 0.3s ease, color 0.3s ease; }
+        .tab-button.active { background-color: #f59e0b; color: white; }
+        .card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
+        .tooltip { position: relative; display: inline-block; }
+        .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: #555; color: #fff; text-align: center; border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.3s; }
+        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+        .modal { display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
+        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 700px; border-radius: 0.5rem; position: relative; }
+        .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-button:hover, .close-button:focus { color: black; text-decoration: none; cursor: pointer; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <header class="bg-sky-700 text-white shadow-lg sticky top-0 z-40">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-2xl font-bold">Paneles Fotovoltaicos: Un Análisis Interactivo</h1>
+                <nav class="hidden md:flex space-x-4">
+                    <a href="#inicio" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600 active" data-section="inicio">Inicio</a>
+                    <a href="#fundamentos" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="fundamentos">Fundamentos</a>
+                    <a href="#tipos" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="tipos">Tipos</a>
+                    <a href="#rendimiento" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="rendimiento">Rendimiento</a>
+                    <a href="#aplicaciones" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="aplicaciones">Aplicaciones</a>
+                    <a href="#sostenibilidad" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="sostenibilidad">Sostenibilidad</a>
+                    <a href="#economia" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="economia">Economía</a>
+                    <a href="#futuro" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="futuro">Futuro</a>
+                    <a href="#asesor-ia" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="asesor-ia">Asesor IA ✨</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-200 hover:text-white hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                    <span class="sr-only">Abrir menú principal</span>
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#inicio" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600 active" data-section="inicio">Inicio</a>
+                <a href="#fundamentos" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="fundamentos">Fundamentos</a>
+                <a href="#tipos" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="tipos">Tipos</a>
+                <a href="#rendimiento" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="rendimiento">Rendimiento</a>
+                <a href="#aplicaciones" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="aplicaciones">Aplicaciones</a>
+                <a href="#sostenibilidad" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="sostenibilidad">Sostenibilidad</a>
+                <a href="#economia" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="economia">Economía</a>
+                <a href="#futuro" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="futuro">Futuro</a>
+                <a href="#asesor-ia" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="asesor-ia">Asesor IA ✨</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <section id="inicio" class="content-section active">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Bienvenido al Explorador de Energía Solar Fotovoltaica</h2>
+                <p class="text-lg mb-4">La energía solar fotovoltaica (FV) es una tecnología clave en la transición hacia un futuro energético más limpio y sostenible. Convierte la luz solar directamente en electricidad, ofreciendo una alternativa crucial a los combustibles fósiles.</p>
+                <p class="mb-4">Este explorador interactivo te guiará a través de los aspectos fundamentales de los paneles fotovoltaicos, desde su funcionamiento básico y los diferentes tipos existentes, hasta su impacto económico y ambiental, y las emocionantes innovaciones que están por venir. Utiliza la navegación para explorar cada sección y descubrir cómo la energía solar está transformando nuestro mundo.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div class="bg-amber-100 p-4 rounded-lg shadow">
+                        <span class="text-4xl">☀️</span>
+                        <h3 class="font-semibold text-amber-700 mt-2">Fuente Limpia</h3>
+                        <p class="text-sm text-slate-600">Genera electricidad sin emisiones directas.</p>
+                    </div>
+                    <div class="bg-emerald-100 p-4 rounded-lg shadow">
+                        <span class="text-4xl">💡</span>
+                        <h3 class="font-semibold text-emerald-700 mt-2">Tecnología en Evolución</h3>
+                        <p class="text-sm text-slate-600">Constante innovación para mayor eficiencia y menor costo.</p>
+                    </div>
+                    <div class="bg-sky-100 p-4 rounded-lg shadow">
+                        <span class="text-4xl">🌍</span>
+                        <h3 class="font-semibold text-sky-700 mt-2">Impacto Global</h3>
+                        <p class="text-sm text-slate-600">Clave para la mitigación del cambio climático.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="fundamentos" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Principios Fundamentales y Funcionamiento</h2>
+                <p class="text-lg mb-4">Los paneles solares operan gracias al <strong class="text-amber-600">efecto fotovoltaico</strong>: la conversión directa de luz solar (fotones) en electricidad. Este proceso ocurre en las celdas solares, comúnmente hechas de silicio.</p>
+                
+                <div class="bg-slate-50 p-4 rounded-lg mb-6 shadow">
+                    <h3 class="text-xl font-semibold text-sky-600 mb-2">El Efecto Fotovoltaico: Paso a Paso</h3>
+                    <ol class="list-decimal list-inside space-y-2 text-slate-700">
+                        <li><strong class="text-amber-500">Incidencia de Fotones:</strong> Partículas de luz solar golpean el material semiconductor (ej. silicio).</li>
+                        <li><strong class="text-amber-500">Liberación de Electrones:</strong> Los fotones excitan y liberan electrones de sus átomos.</li>
+                        <li><strong class="text-amber-500">Creación de Corriente:</strong> Los electrones liberados fluyen, generando una corriente eléctrica (Corriente Continua - CC).</li>
+                        <li><strong class="text-amber-500">Conversión a CA:</strong> Un inversor transforma la CC en Corriente Alterna (CA), utilizable en hogares y la red.</li>
+                    </ol>
+                </div>
+
+                <div class="my-6 p-4 bg-sky-50 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-sky-600 mb-3">Visualización del Proceso</h3>
+                    <div class="flex flex-col md:flex-row items-center justify-around p-4 bg-white rounded-lg border border-sky-200">
+                        <div class="text-center mb-4 md:mb-0">
+                            <span class="text-5xl">☀️</span>
+                            <p class="mt-1 font-medium text-amber-600">Luz Solar (Fotones)</p>
+                        </div>
+                        <div class="text-3xl text-sky-500 mx-4">➡️</div>
+                        <div class="text-center p-3 border-2 border-slate-300 rounded-lg bg-slate-200 shadow-inner mb-4 md:mb-0">
+                            <span class="text-3xl">🔋</span>
+                            <p class="mt-1 font-medium text-slate-700">Panel Solar (Celdas de Silicio)</p>
+                            <p class="text-xs text-slate-500">Electrones se liberan</p>
+                        </div>
+                        <div class="text-3xl text-sky-500 mx-4">➡️</div>
+                        <div class="text-center mb-4 md:mb-0">
+                             <span class="text-3xl">⚡</span>
+                            <p class="mt-1 font-medium text-sky-600">Corriente Continua (CC)</p>
+                        </div>
+                        <div class="text-3xl text-sky-500 mx-4">➡️</div>
+                        <div class="text-center p-3 border-2 border-slate-300 rounded-lg bg-slate-200 shadow-inner mb-4 md:mb-0">
+                            <span class="text-3xl">🔄</span>
+                            <p class="mt-1 font-medium text-slate-700">Inversor</p>
+                        </div>
+                        <div class="text-3xl text-sky-500 mx-4">➡️</div>
+                        <div class="text-center">
+                            <span class="text-3xl">💡🏠</span>
+                            <p class="mt-1 font-medium text-emerald-600">Corriente Alterna (CA)</p>
+                            <p class="text-xs text-slate-500">Uso en hogar / Red</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="text-2xl font-semibold text-sky-600 mt-6 mb-3">Componentes Clave de un Sistema Fotovoltaico</h3>
+                <p class="mb-4">Un sistema fotovoltaico es más que solo paneles. Incluye varios componentes esenciales que trabajan juntos:</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="card bg-white p-4 rounded-lg border border-slate-200 shadow-md">
+                        <h4 class="font-bold text-lg text-sky-700">Paneles Solares (Módulos FV)</h4>
+                        <p class="text-sm text-slate-600">Capturan la luz solar y la convierten en electricidad CC.</p>
+                    </div>
+                    <div class="card bg-white p-4 rounded-lg border border-slate-200 shadow-md">
+                        <h4 class="font-bold text-lg text-sky-700">Inversor Solar</h4>
+                        <p class="text-sm text-slate-600">Convierte la electricidad CC de los paneles en CA utilizable.</p>
+                    </div>
+                    <div class="card bg-white p-4 rounded-lg border border-slate-200 shadow-md">
+                        <h4 class="font-bold text-lg text-sky-700">Baterías Solares (Opcional)</h4>
+                        <p class="text-sm text-slate-600">Almacenan el exceso de energía para uso posterior (noches, días nublados).</p>
+                    </div>
+                    <div class="card bg-white p-4 rounded-lg border border-slate-200 shadow-md">
+                        <h4 class="font-bold text-lg text-sky-700">Regulador de Carga</h4>
+                        <p class="text-sm text-slate-600">Protege las baterías de sobrecargas y sobredescargas (en sistemas con baterías).</p>
+                    </div>
+                    <div class="card bg-white p-4 rounded-lg border border-slate-200 shadow-md">
+                        <h4 class="font-bold text-lg text-sky-700">Estructuras de Montaje</h4>
+                        <p class="text-sm text-slate-600">Sostienen los paneles en la orientación e inclinación óptimas.</p>
+                    </div>
+                    <div class="card bg-white p-4 rounded-lg border border-slate-200 shadow-md">
+                        <h4 class="font-bold text-lg text-sky-700">Cableado y Protecciones</h4>
+                        <p class="text-sm text-slate-600">Conectan los componentes y protegen el sistema contra fallos eléctricos.</p>
+                    </div>
+                </div>
+                <p class="mt-6 text-sm italic text-slate-500">La interdependencia de estos componentes es crucial. Por ejemplo, la elección del inversor (de cadena vs. microinversores) afecta cómo el sombreado impacta la producción total. Un diseño de sistema holístico es esencial para maximizar la eficiencia y la rentabilidad.</p>
+            </div>
+        </section>
+
+        <section id="tipos" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Tipos de Paneles Fotovoltaicos</h2>
+                <p class="text-lg mb-4">La tecnología fotovoltaica ofrece diversos tipos de paneles, cada uno con sus propias características, ventajas y desafíos. La elección depende de factores como la eficiencia deseada, el presupuesto, el espacio disponible y las condiciones ambientales.</p>
+                
+                <div class="mb-6">
+                    <div class="chart-container mx-auto h-64 md:h-96">
+                        <canvas id="panelEfficiencyChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-slate-500 mt-2">Comparación de rangos de eficiencia típicos. Las tecnologías emergentes pueden tener rangos más amplios y eficiencias de laboratorio más altas.</p>
+                </div>
+
+                <div id="panelTypesContainer" class="space-y-6">
+                </div>
+                <p class="mt-6 text-sm italic text-slate-500">La elección del panel solar implica un equilibrio entre eficiencia, costo y durabilidad. No hay una solución única "superior"; la opción óptima depende de las prioridades de cada proyecto.</p>
+            </div>
+        </section>
+        
+        <div id="panelDetailModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeModal('panelDetailModal')">&times;</span>
+                <h3 id="modalPanelName" class="text-2xl font-bold text-sky-700 mb-3"></h3>
+                <p class="mb-2"><strong>Material Principal:</strong> <span id="modalPanelMaterial"></span></p>
+                <p class="mb-2"><strong>Características Clave:</strong> <span id="modalPanelFeatures"></span></p>
+                <p class="mb-2"><strong>Rango de Eficiencia (%):</strong> <span id="modalPanelEfficiency"></span></p>
+                <p class="mb-2"><strong>Vida Útil Estimada (años):</strong> <span id="modalPanelLifespan"></span></p>
+                <p class="mb-2"><strong>Costo Relativo:</strong> <span id="modalPanelCost"></span></p>
+                <p class="mb-2"><strong>Aplicaciones Típicas:</strong> <span id="modalPanelApplications"></span></p>
+                <p class="mb-2"><strong>Ventajas:</strong> <span id="modalPanelAdvantages"></span></p>
+                <p class="mb-4"><strong>Desafíos:</strong> <span id="modalPanelChallenges"></span></p>
+            </div>
+        </div>
+
+
+        <section id="rendimiento" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Factores que Influyen en el Rendimiento</h2>
+                <p class="text-lg mb-4">La eficiencia de un panel solar no solo depende de su tecnología, sino también de factores ambientales y de diseño. Comprenderlos es clave para optimizar la producción de energía.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="card bg-slate-50 p-5 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">☀️ Irradiación Solar</h3>
+                        <p class="text-sm text-slate-700">Es la cantidad de luz solar que llega al panel. Incluye radiación directa, difusa (días nublados) y reflejada (albedo). Factores como latitud, altitud y clima local son determinantes.</p>
+                    </div>
+                    <div class="card bg-slate-50 p-5 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">🌡️ Temperatura</h3>
+                        <p class="text-sm text-slate-700">Irónicamente, el calor excesivo <strong class="text-red-600">reduce</strong> la eficiencia. La temperatura óptima es ~25°C. Por cada grado por encima, la eficiencia puede bajar 0.3-0.5%. El calor también acelera la degradación.</p>
+                    </div>
+                    <div class="card bg-slate-50 p-5 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">🧭 Orientación e Inclinación</h3>
+                        <p class="text-sm text-slate-700">Cruciales para maximizar la captación. En el hemisferio norte, idealmente al sur; en el sur, al norte. La inclinación varía con la latitud y estación (ej. 30° en España).</p>
+                    </div>
+                    <div class="card bg-slate-50 p-5 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">🌳 Sombreado Parcial</h3>
+                        <p class="text-sm text-slate-700">Sombras de árboles o edificios pueden reducir el rendimiento hasta un 35%. Soluciones: microinversores, optimizadores de potencia, diseño cuidadoso.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-sky-600 mb-2 text-center">Impacto de la Temperatura en la Eficiencia</h3>
+                    <div class="chart-container mx-auto h-64 md:h-80">
+                        <canvas id="temperatureEfficiencyChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-slate-500 mt-2">Ilustración conceptual de cómo la eficiencia disminuye al aumentar la temperatura del panel por encima de los 25°C.</p>
+                </div>
+                <p class="mt-6 text-sm italic text-slate-500">La optimización del rendimiento requiere un análisis detallado del sitio y un diseño inteligente que considere la interacción de todos estos factores. La eficiencia nominal (STC) rara vez se alcanza en condiciones reales.</p>
+            </div>
+        </section>
+
+        <section id="aplicaciones" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Aplicaciones de la Energía Solar FV</h2>
+                <p class="text-lg mb-4">La versatilidad de la energía fotovoltaica ha permitido su expansión a una amplia gama de sectores y usos, desde el hogar hasta proyectos masivos e innovaciones sorprendentes.</p>
+
+                <div class="mb-6">
+                    <div class="flex border-b border-slate-300">
+                        <button class="tab-button flex-1 py-2 px-4 text-slate-600 hover:bg-amber-100 active" onclick="openAppTab(event, 'tradicionales')">Tradicionales</button>
+                        <button class="tab-button flex-1 py-2 px-4 text-slate-600 hover:bg-amber-100" onclick="openAppTab(event, 'granEscala')">Gran Escala</button>
+                        <button class="tab-button flex-1 py-2 px-4 text-slate-600 hover:bg-amber-100" onclick="openAppTab(event, 'innovadoras')">Innovadoras</button>
+                    </div>
+
+                    <div id="tradicionales" class="app-tab-content mt-6">
+                        <h3 class="text-2xl font-semibold text-sky-600 mb-3">Residencial, Comercial e Industrial</h3>
+                        <p class="mb-4">En <strong class="text-amber-600">hogares</strong>, para autoconsumo (luces, electrodomésticos, climatización). En <strong class="text-amber-600">empresas e industrias</strong>, para reducir costos operativos en naves, procesamiento de alimentos, agricultura (riego, iluminación), etc.</p>
+                        <h4 class="text-xl font-semibold text-sky-600 mt-4 mb-2">Sistemas Aislados (Off-Grid)</h4>
+                        <p class="mb-1">Autosuficiencia energética total, cruciales para zonas rurales, remotas, granjas, caravanas. Requieren baterías.</p>
+                        <p class="text-sm text-slate-600"><strong>Beneficios:</strong> Energía en áreas remotas, ahorro a largo plazo, independencia. <strong>Desafíos:</strong> Mayor costo inicial (baterías), espacio, mantenimiento.</p>
+                    </div>
+
+                    <div id="granEscala" class="app-tab-content mt-6" style="display:none;">
+                        <h3 class="text-2xl font-semibold text-sky-600 mb-3">Plantas Solares a Gran Escala</h3>
+                        <p class="mb-4">Grandes "granjas solares" que generan enormes cantidades de electricidad para la red, contribuyendo a la autosuficiencia energética y reducción de emisiones. China e India lideran este desarrollo.</p>
+                        <div class="chart-container mx-auto h-72 md:h-96">
+                            <canvas id="largeScalePlantsChart"></canvas>
+                        </div>
+                        <p class="text-center text-sm text-slate-500 mt-2">Capacidad instalada de algunas de las plantas solares más grandes del mundo (MW).</p>
+                        <div id="largeScalePlantsList" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                    </div>
+
+                    <div id="innovadoras" class="app-tab-content mt-6" style="display:none;">
+                        <h3 class="text-2xl font-semibold text-sky-600 mb-3">Aplicaciones Innovadoras</h3>
+                        <p class="mb-4">La industria solar busca constantemente integrar la tecnología en nuestra vida e infraestructuras de formas novedosas:</p>
+                        <ul class="list-disc list-inside space-y-3">
+                            <li><strong>Integración en Edificios (BIPV):</strong> Tejas solares, fachadas, ventanas fotovoltaicas. Generan energía y son parte del edificio.</li>
+                            <li><strong>Carreteras Solares:</strong> Paneles en carreteras para alimentar alumbrado, señales o cargar VEs.</li>
+                            <li><strong>Energía Solar Flotante (Floating PV):</strong> Paneles sobre lagos o embalses. Ahorra terreno y puede aumentar eficiencia por refrigeración.</li>
+                            <li><strong>Agrivoltaica:</strong> Combinación de agricultura y paneles solares en el mismo terreno.</li>
+                            <li><strong>Transporte Solar:</strong> Vehículos (coches, aviones) alimentados por energía solar.</li>
+                            <li><strong>Dispositivos Portátiles:</strong> Cargadores, portátiles solares, etc.</li>
+                        </ul>
+                        <p class="mt-4 text-sm italic text-slate-500">Estas innovaciones no solo expanden el mercado, sino que ofrecen sinergias: la solar flotante reduce evaporación, la BIPV mejora aislamiento, etc.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sostenibilidad" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Impacto Ambiental y Sostenibilidad</h2>
+                <p class="text-lg mb-4">Aunque es una energía limpia en su operación, es vital analizar el ciclo de vida completo de los paneles FV, desde su fabricación hasta su reciclaje.</p>
+
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-sky-600 mb-2 text-center">Huella de Carbono Comparativa (g CO2eq/kWh)</h3>
+                    <div class="chart-container mx-auto h-64 md:h-80">
+                        <canvas id="carbonFootprintChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-slate-500 mt-2">Comparación aproximada de emisiones de CO2 por kWh. La solar FV es significativamente menor que los combustibles fósiles.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-50 p-5 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">Análisis del Ciclo de Vida (ACV)</h3>
+                        <p class="text-sm text-slate-700 mb-2">Evalúa impactos desde la extracción de materias primas (silicio, vidrio, aluminio), fabricación, transporte, uso, hasta el desmantelamiento y reciclaje.</p>
+                        <p class="text-sm text-slate-700">Un panel FV recupera la energía usada en su fabricación en <strong class="text-emerald-600">6 meses a 1.4 años</strong>, y produce energía limpia por más del 95% de su vida útil (>30 años).</p>
+                    </div>
+                     <div class="bg-slate-50 p-5 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">Gestión de Residuos y Reciclaje</h3>
+                        <p class="text-sm text-slate-700 mb-2">Vida útil: 25-30 años. Materiales altamente reciclables: vidrio (~85% del peso, 95% reciclable), aluminio (100%), silicio (85% recuperable).</p>
+                        <p class="text-sm text-slate-700 mb-2"><strong>Desafíos:</strong> Materiales tóxicos minoritarios (plomo, cadmio), falta de infraestructura de reciclaje especializada globalmente.</p>
+                        <p class="text-sm text-slate-700"><strong>Procesos:</strong> Mecánico (trituración), Químico (disolución), Térmico (quema de polímeros).</p>
+                        <p class="text-xs text-amber-700 mt-1">La economía circular es clave: transformar residuos en recursos.</p>
+                    </div>
+                    <div class="bg-slate-50 p-5 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">Impacto en Uso del Suelo y Biodiversidad</h3>
+                        <p class="text-sm text-slate-700 mb-2">Grandes plantas pueden alterar ecosistemas. Deslumbramiento puede afectar aves.</p>
+                        <p class="text-sm text-slate-700"><strong>Mitigación:</strong> Agrivoltaica, pastoreo de ovejas, vallados permeables, creación de refugios para fauna, uso de especies polinizadoras. Paneles pueden crear microclimas beneficiosos en zonas áridas.</p>
+                    </div>
+                </div>
+                 <p class="mt-6 text-sm italic text-slate-500">La industria FV avanza hacia una sostenibilidad integral, mejorando fabricación, reciclaje y mitigando impactos para ser verdaderamente ecológica de principio a fin.</p>
+            </div>
+        </section>
+
+        <section id="economia" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Aspectos Económicos y Rentabilidad</h2>
+                <p class="text-lg mb-4">La viabilidad económica de la energía solar ha mejorado drásticamente, convirtiéndola en una inversión atractiva. Los costos bajan, el retorno de la inversión (ROI) es favorable, y los ahorros en la factura eléctrica son significativos.</p>
+
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold text-sky-600 mb-2 text-center">Comparativa Económica (Estimaciones España)</h3>
+                    <div class="chart-container mx-auto h-72 md:h-96">
+                        <canvas id="economicComparisonChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-slate-500 mt-2">Costos de instalación, ROI anual y tiempo de amortización estimados.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">Costos de Instalación</h3>
+                        <ul class="list-disc list-inside text-sm text-slate-700 space-y-1">
+                            <li><strong>Residencial (conectado a red, 6 paneles):</strong> Desde 5.100€.</li>
+                            <li><strong>Residencial (aislado):</strong> +4.500€ a 8.200€ (por baterías).</li>
+                            <li><strong>Comercial (España):</strong> 800-1.200 €/kW. PYME (10kW): 8.000-12.000€. Gran empresa (>50kW): hasta 50.000€.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">Retorno de Inversión (ROI) y Amortización</h3>
+                        <ul class="list-disc list-inside text-sm text-slate-700 space-y-1">
+                            <li><strong>Amortización general:</strong> 5-8 años.</li>
+                            <li><strong>Residencial (sin baterías/ayudas):</strong> <5 años, ROI >20%. Con baterías: ~7 años, ROI 14%.</li>
+                            <li><strong>Empresas:</strong> ROI 15-25%, amortización <5 años.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">Ahorro y Compensación</h3>
+                         <p class="text-sm text-slate-700 mb-1">Reducción factura eléctrica: 50-90% (incluso 70-100% con optimización).</p>
+                         <p class="text-sm text-slate-700">Compensación de excedentes (venta a la red) incrementa ahorros.</p>
+                    </div>
+                     <div>
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">Paridad de Red</h3>
+                         <p class="text-sm text-slate-700">Punto donde el costo de generar energía solar es ≤ al de comprarla de la red. Ya alcanzada en muchos lugares.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 bg-amber-50 p-5 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-amber-700 mb-2">Incentivos en España 🇪🇸</h3>
+                    <p class="text-sm text-slate-700 mb-2">Impulsan el autoconsumo. Incluyen:</p>
+                    <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                        <li><strong>Deducción IRPF:</strong> 20-60% según mejora energética.</li>
+                        <li><strong>Bonificaciones IBI/ICIO:</strong> 30-50% en muchos municipios.</li>
+                        <li><strong>Subvenciones Autonómicas/Municipales:</strong> Activas hasta 2025/2030 en varias regiones.</li>
+                        <li><strong>Autoconsumo Colectivo:</strong> Compartir energía entre vecinos.</li>
+                    </ul>
+                </div>
+                <p class="mt-6 text-sm italic text-slate-500">La energía solar es una decisión económicamente inteligente. Las políticas públicas son cruciales para acelerar su adopción masiva.</p>
+            </div>
+        </section>
+
+        <section id="futuro" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Tendencias Futuras e Innovaciones</h2>
+                <p class="text-lg mb-4">El sector fotovoltaico está en constante evolución, con avances que prometen sistemas aún más eficientes, accesibles y versátiles.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="card bg-sky-50 p-5 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">🚀 Avances en Eficiencia y Costos</h3>
+                        <p class="text-sm text-slate-700">Nuevos materiales y nanotecnología (potencial >30% eficiencia). Producción a gran escala y competencia continúan bajando precios.</p>
+                    </div>
+                    <div class="card bg-sky-50 p-5 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">🔋 Almacenamiento e IA</h3>
+                        <p class="text-sm text-slate-700">Integración de baterías para suministro constante. IA para optimizar producción, mantenimiento predictivo y gestión energética inteligente.</p>
+                    </div>
+                    <div class="card bg-sky-50 p-5 rounded-lg shadow">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">🔬 Nuevos Materiales y Diseños</h3>
+                        <ul class="list-disc list-inside text-sm text-slate-600 space-y-1 mt-1">
+                            <li><strong>Células de Perovskita:</strong> Más eficientes y económicas, potencial para ropa inteligente, vehículos. (Durabilidad en mejora).</li>
+                            <li><strong>Paneles Flexibles y Transparentes:</strong> Integración en fachadas, vehículos, electrónica.</li>
+                            <li><strong>Paneles Infrarrojos:</strong> Convierten luz infrarroja (penetra nubes), viables en regiones menos soleadas.</li>
+                            <li><strong>Tejas Solares:</strong> Estética integrada en tejados.</li>
+                        </ul>
+                    </div>
+                    <div class="card bg-sky-50 p-5 rounded-lg shadow col-span-1 md:col-span-2 lg:col-span-3">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">🌍 Expansión de Aplicaciones Emergentes</h3>
+                        <p class="text-sm text-slate-700">Continuará crecimiento de BIPV, carreteras solares, solar flotante, agrivoltaica. Desarrollo de microredes solares para comunidades remotas. Nuevos modelos de negocio (alquiler de paneles).</p>
+                    </div>
+                </div>
+                <p class="mt-6 text-sm italic text-slate-500">La convergencia tecnológica (IA, almacenamiento) y la investigación fundamental en materiales están redefiniendo los límites de la energía solar, haciéndola más inteligente, autónoma y omnipresente.</p>
+            </div>
+        </section>
+
+        <section id="asesor-ia" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Asesor Solar IA ✨: Pregúntale a nuestro Experto</h2>
+                <p class="text-lg mb-4">¿Tienes una pregunta específica sobre paneles fotovoltaicos, su instalación, mantenimiento, o cualquier otro aspecto? Nuestro asistente de IA está aquí para ayudarte. Solo escribe tu pregunta y obtén una respuesta concisa y clara.</p>
+                
+                <div class="mb-4">
+                    <label for="solarQuestionInput" class="block text-slate-700 text-sm font-bold mb-2">Tu Pregunta:</label>
+                    <textarea id="solarQuestionInput" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline resize-y h-32" placeholder="Ej: ¿Cuál es la vida útil de un panel solar? o ¿Cómo afecta la nieve a la producción?"></textarea>
+                </div>
+                <button id="askSolarExpertBtn" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 ease-in-out">
+                    Preguntar al Experto Solar ✨
+                </button>
+                
+                <div id="solarLoadingIndicator" class="mt-4 text-amber-600 hidden">
+                    Cargando respuesta... por favor espera.
+                </div>
+
+                <div id="solarResponseArea" class="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200 shadow-inner text-slate-700 min-h-[100px]">
+                    <p class="text-slate-500 italic">Tu respuesta se mostrará aquí.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-sky-800 text-sky-100 text-center p-6 mt-8">
+        <p>&copy; 2024 Explorador Interactivo de Paneles Fotovoltaicos. Basado en el "Estudio Exhaustivo sobre Paneles Fotovoltaicos".</p>
+        <p class="text-xs mt-1">Aplicación generada para fines ilustrativos y educativos.</p>
+    </footer>
+    
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const contentSections = document.querySelectorAll('.content-section');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        function setActiveSection(sectionId) {
+            contentSections.forEach(section => {
+                if (section.id === sectionId) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+            navLinks.forEach(link => {
+                if (link.dataset.section === sectionId) {
+                    link.classList.add('active');
+                     if (link.closest('#mobile-menu')) {
+                        link.classList.add('bg-sky-600', 'text-white');
+                    }
+                } else {
+                    link.classList.remove('active');
+                    if (link.closest('#mobile-menu')) {
+                        link.classList.remove('bg-sky-600', 'text-white');
+                    }
+                }
+            });
+            window.scrollTo(0, 0);
+        }
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = e.target.dataset.section;
+                setActiveSection(sectionId);
+                if (mobileMenu.classList.contains('block')) {
+                    mobileMenu.classList.remove('block');
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('block');
+        });
+        
+        function openAppTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = evt.currentTarget.closest('.mb-6').querySelectorAll(".app-tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = evt.currentTarget.parentElement.querySelectorAll(".tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.classList.add("active");
+        }
+
+        const panelTypesData = [
+            { name: "Monocristalino", material: "Silicio puro", features: "Estructura uniforme, color negro/azul oscuro, bordes redondeados", efficiency: "18-25%", lifespan: "25+", cost: "Alto", applications: "Espacio limitado (residencial/comercial), zonas de radiación variable, proyectos de alto rendimiento", advantages: "Alta eficiencia, mejor rendimiento en poca luz/altas temperaturas, larga vida útil", challenges: "Mayor costo inicial", efficiency_min: 18, efficiency_max: 25, lifespan_val: 25 },
+            { name: "Policristalino", material: "Fragmentos de silicio fundido", features: "Estructura menos uniforme, color azul, patrón irregular", efficiency: "15-20%", lifespan: "~20", cost: "Medio", applications: "Desplazado, pero viable con espacio abundante", advantages: "Menor costo de producción", challenges: "Menor eficiencia, mayor degradación", efficiency_min: 15, efficiency_max: 20, lifespan_val: 20 },
+            { name: "Película Delgada (Amorfo)", material: "Silicio amorfo", features: "Estructura irregular, flexible, ligero, sobre sustratos flexibles", efficiency: "6-13%", lifespan: "10-15", cost: "Bajo", applications: "Aplicaciones específicas (techos curvos, vehículos, fachadas), poca luz/sombra", advantages: "Flexibilidad, ligereza, integración arquitectónica, mejor coeficiente de temperatura", challenges: "Baja eficiencia, requiere más espacio, mayor degradación", efficiency_min: 6, efficiency_max: 13, lifespan_val: 12 },
+            { name: "Perovskita", material: "Perovskita", features: "Propiedades ópticas/electrónicas ideales, eficiente transporte de electrones", efficiency: "Hasta 24% (tándem), 45-50% (multiunión lab)", lifespan: "En desarrollo", cost: "Potencialmente bajo", applications: "No tradicionales (ropa inteligente, vehículos), integración arquitectónica", advantages: "Alta eficiencia, bajo costo de producción, flexibilidad, ligereza, adaptabilidad", challenges: "Durabilidad limitada (fuga de yodo), uso de plomo (se investigan alternativas)", efficiency_min: 20, efficiency_max: 24, lifespan_val: 5 },
+            { name: "Telururo de Cadmio (CdTe)", material: "CdTe", features: "Película delgada, heterounión p-n, sin marco de aluminio, TCO", efficiency: "Hasta 19%", lifespan: "Larga", cost: "Bajo", applications: "Aviones espaciales, granjas solares en climas cálidos, techos de VE", advantages: "Bajo costo de fabricación, mejor coeficiente de temperatura, utiliza luz dispersa", challenges: "Requiere más espacio por kW", efficiency_min: 15, efficiency_max: 19, lifespan_val: 20 },
+            { name: "CIGS", material: "Cobre, Indio, Galio, Selenio", features: "Película delgada", efficiency: "\"Bastante decente\"", lifespan: "N/A", cost: "N/A", applications: "Fachadas, ventanas, aplicaciones espaciales", advantages: "Facilidad de instalación, flexibilidad", challenges: "N/A", efficiency_min: 12, efficiency_max: 16, lifespan_val: 15 },
+            { name: "Bifacial", material: "Silicio (mono/poli)", features: "Captura luz por ambas caras (frontal y trasera), encapsulado vidrio-vidrio", efficiency: "Hasta 30% más que monofaciales", lifespan: "30+", cost: "Ligeramente más alto (disminuyendo)", applications: "Superficies reflectantes (nieve, techos blancos), toldos, pérgolas, autoconsumo industrial", advantages: "Mayor eficiencia, mejor aprovechamiento del espacio, mayor durabilidad, funciona a bajas temperaturas", challenges: "Mayor peso, montaje más complejo (disminuyendo)", efficiency_min: 20, efficiency_max: 26, lifespan_val: 30 }
+        ];
+
+        function populatePanelTypes() {
+            const container = document.getElementById('panelTypesContainer');
+            container.innerHTML = '';
+            panelTypesData.forEach(panel => {
+                const card = `
+                    <div class="card bg-slate-50 p-5 rounded-lg shadow border border-slate-200 hover:shadow-lg cursor-pointer" onclick="openPanelModal('${panel.name}')">
+                        <h3 class="text-xl font-semibold text-sky-600 mb-2">${panel.name}</h3>
+                        <p class="text-sm text-slate-700 mb-1"><strong>Eficiencia:</strong> ${panel.efficiency}</p>
+                        <p class="text-sm text-slate-700 mb-1"><strong>Vida Útil:</strong> ${panel.lifespan} años</p>
+                        <p class="text-sm text-slate-700"><strong>Ideal para:</strong> ${panel.applications.substring(0,100)}...</p>
+                        <div class="mt-3 text-right">
+                            <span class="text-xs text-amber-600 font-semibold">Ver detalles &rarr;</span>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+        
+        function openPanelModal(panelName) {
+            const panel = panelTypesData.find(p => p.name === panelName);
+            if (panel) {
+                document.getElementById('modalPanelName').innerText = panel.name;
+                document.getElementById('modalPanelMaterial').innerText = panel.material;
+                document.getElementById('modalPanelFeatures').innerText = panel.features;
+                document.getElementById('modalPanelEfficiency').innerText = panel.efficiency;
+                document.getElementById('modalPanelLifespan').innerText = panel.lifespan;
+                document.getElementById('modalPanelCost').innerText = panel.cost;
+                document.getElementById('modalPanelApplications').innerText = panel.applications;
+                document.getElementById('modalPanelAdvantages').innerText = panel.advantages;
+                document.getElementById('modalPanelChallenges').innerText = panel.challenges;
+                document.getElementById('panelDetailModal').style.display = 'block';
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('panelDetailModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        const largeScalePlantsData = [
+            { name: "Parque Solar Bhadla (India)", capacity: 2245, area: "N/A", impact: "Redujo costo electricidad solar India." },
+            { name: "Parque Solar Desierto de Tengger (China)", capacity: 1510, area: "43 km²", impact: "Alimenta ~600.000 hogares." },
+            { name: "Planta Villanueva (México)", capacity: 828, area: "24 km²", impact: "Más grande de América, alimenta ~1.2M hogares." },
+            { name: "Parque Solar Noor (Marruecos)", capacity: 500, area: "30 km²", impact: "Más grande de África." },
+            { name: "Estación Solar Kamuthi (India)", capacity: 650, area: "N/A", impact: "Alimenta ~265.000 hogares." },
+            { name: "Parque Solar Jinchuan (China)", capacity: 1030, area: "N/A", impact: "Alimenta miles de hogares." },
+            { name: "Parque Ultra Mega Solar Kurnool (India)", capacity: 1000, area: "N/A", impact: "Alimenta casi toda el área en horas pico." }
+        ];
+
+        function populateLargeScalePlants() {
+            const container = document.getElementById('largeScalePlantsList');
+            container.innerHTML = '';
+            largeScalePlantsData.slice(0,6).forEach(plant => { // Show a few examples
+                const card = `
+                    <div class="card bg-white p-4 rounded-lg border border-slate-200 shadow">
+                        <h4 class="font-semibold text-md text-sky-700">${plant.name}</h4>
+                        <p class="text-sm text-slate-600"><strong>Capacidad:</strong> ${plant.capacity} MW</p>
+                        <p class="text-sm text-slate-600"><strong>Impacto:</strong> ${plant.impact}</p>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        async function askSolarExpert() {
+            const questionInput = document.getElementById('solarQuestionInput');
+            const responseArea = document.getElementById('solarResponseArea');
+            const loadingIndicator = document.getElementById('solarLoadingIndicator');
+            const userQuestion = questionInput.value.trim();
+
+            if (!userQuestion) {
+                responseArea.innerHTML = '<p class="text-red-500">Por favor, escribe tu pregunta.</p>';
+                return;
+            }
+
+            loadingIndicator.classList.remove('hidden');
+            responseArea.innerHTML = ''; // Clear previous response
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: `Actúa como un experto en energía solar. Responde a la siguiente pregunta de forma concisa y clara en español: ${userQuestion}` }] });
+                const payload = { contents: chatHistory };
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    responseArea.innerHTML = `<p>${text}</p>`;
+                } else {
+                    responseArea.innerHTML = '<p class="text-red-500">Lo siento, no pude obtener una respuesta. Intenta reformular tu pregunta.</p>';
+                }
+            } catch (error) {
+                console.error('Error al llamar a la API de Gemini:', error);
+                responseArea.innerHTML = '<p class="text-red-500">Hubo un error al conectar con el asistente. Por favor, inténtalo de nuevo más tarde.</p>';
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setActiveSection('inicio');
+            populatePanelTypes();
+            populateLargeScalePlants();
+
+            document.getElementById('askSolarExpertBtn').addEventListener('click', askSolarExpert);
+
+            const panelEfficiencyCtx = document.getElementById('panelEfficiencyChart').getContext('2d');
+            new Chart(panelEfficiencyCtx, {
+                type: 'bar',
+                data: {
+                    labels: panelTypesData.map(p => p.name),
+                    datasets: [{
+                        label: 'Eficiencia Mínima (%)',
+                        data: panelTypesData.map(p => p.efficiency_min),
+                        backgroundColor: 'rgba(56, 189, 248, 0.6)', // sky-400
+                        borderColor: 'rgba(14, 116, 144, 1)', // sky-700
+                        borderWidth: 1
+                    }, {
+                        label: 'Eficiencia Máxima (%)',
+                        data: panelTypesData.map(p => p.efficiency_max),
+                        backgroundColor: 'rgba(245, 158, 11, 0.6)', // amber-500
+                        borderColor: 'rgba(180, 83, 9, 1)', // amber-700
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Eficiencia (%)' } } },
+                    plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } }
+                }
+            });
+
+            const temperatureEfficiencyCtx = document.getElementById('temperatureEfficiencyChart').getContext('2d');
+            new Chart(temperatureEfficiencyCtx, {
+                type: 'line',
+                data: {
+                    labels: ['15°C', '20°C', '25°C (Óptima)', '30°C', '35°C', '40°C', '45°C'],
+                    datasets: [{
+                        label: 'Eficiencia Relativa del Panel',
+                        data: [101, 100.5, 100, 98, 96, 94, 92],
+                        borderColor: 'rgb(245, 158, 11)',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { title: { display: true, text: 'Eficiencia Relativa (%)' } } },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${context.parsed.y}%` } } }
+                }
+            });
+            
+            const largeScalePlantsCtx = document.getElementById('largeScalePlantsChart').getContext('2d');
+            new Chart(largeScalePlantsCtx, {
+                type: 'bar',
+                data: {
+                    labels: largeScalePlantsData.map(p => p.name.split('(')[0].trim()), // Shorter names
+                    datasets: [{
+                        label: 'Capacidad Instalada (MW)',
+                        data: largeScalePlantsData.map(p => p.capacity),
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)', // emerald-500
+                        borderColor: 'rgba(5, 150, 105, 1)', // emerald-700
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: { x: { beginAtZero: true, title: { display: true, text: 'Capacidad (MW)' } } },
+                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }
+                }
+            });
+
+            const carbonFootprintCtx = document.getElementById('carbonFootprintChart').getContext('2d');
+            new Chart(carbonFootprintCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Carbón', 'Gas Natural', 'Solar Fotovoltaica', 'Nuclear', 'Eólica'],
+                    datasets: [{
+                        label: 'g CO2eq / kWh',
+                        data: [820, 490, 45, 12, 11], // Valores aproximados
+                        backgroundColor: [
+                            'rgba(107, 114, 128, 0.7)', // gray-500
+                            'rgba(156, 163, 175, 0.7)', // gray-400
+                            'rgba(251, 191, 36, 0.7)', // amber-400
+                            'rgba(52, 211, 153, 0.7)', // emerald-400
+                            'rgba(96, 165, 250, 0.7)'  // blue-400
+                        ],
+                        borderColor: [
+                            'rgba(55, 65, 81, 1)', 
+                            'rgba(107, 114, 128, 1)',
+                            'rgba(217, 119, 6, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(59, 130, 246, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Emisiones (g CO2eq/kWh)' } } },
+                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }
+                }
+            });
+
+            const economicData = {
+                labels: ['Residencial (Red)', 'Residencial (Aislado)', 'PYME', 'Gran Empresa'],
+                costo: [5100, 9600, 10000, 50000], // Estimaciones base
+                roi: [20, 14, 20, 20], // %
+                amortizacion: [5, 7, 4, 4] // años
+            };
+            const economicComparisonCtx = document.getElementById('economicComparisonChart').getContext('2d');
+            new Chart(economicComparisonCtx, {
+                type: 'bar',
+                data: {
+                    labels: economicData.labels,
+                    datasets: [
+                        {
+                            label: 'Costo Estimado (€)',
+                            data: economicData.costo,
+                            backgroundColor: 'rgba(239, 68, 68, 0.6)', // red-500
+                            borderColor: 'rgba(185, 28, 28, 1)', // red-700
+                            yAxisID: 'y',
+                            order: 1
+                        },
+                        {
+                            label: 'ROI Anual Estimado (%)',
+                            data: economicData.roi,
+                            backgroundColor: 'rgba(16, 185, 129, 0.6)', // emerald-500
+                            borderColor: 'rgba(5, 150, 105, 1)', // emerald-700
+                            yAxisID: 'y1',
+                            order: 2
+                        },
+                        {
+                            label: 'Amortización Estimada (años)',
+                            data: economicData.amortizacion,
+                            backgroundColor: 'rgba(59, 130, 246, 0.6)', // blue-500
+                            borderColor: 'rgba(37, 99, 235, 1)', // blue-700
+                            yAxisID: 'y1',
+                            order: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Costo (€)' } },
+                        y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'ROI (%) / Años' }, grid: { drawOnChartArea: false } }
+                    },
+                    plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
