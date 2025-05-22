@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explorador Interactivo de Paneles Fotovoltaicos</title>
+    <meta name="description" content="Descubre todo sobre paneles fotovoltaicos, su funcionamiento, tipos, rendimiento, aplicaciones, impacto económico y futuro. ¡Tu guía interactiva de energía solar!">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Application Structure Plan: The SPA will use a thematic, multi-section layout navigated by a fixed top navigation bar. Key sections will include:
@@ -15,17 +16,17 @@
     6. Sostenibilidad: Lifecycle impact (Chart.js for conceptual impact stages) and recycling.
     7. Economía Solar: Costs, ROI, savings (Chart.js for financial comparisons), and incentives.
     8. Futuro de la Solar: Emerging tech and trends.
-    9. Asesor Solar IA: New section for AI-powered Q&A using Gemini API.
-    This structure is chosen to guide the user logically from basic understanding to specific applications, economic considerations, and future outlook, making the comprehensive report content digestible and engaging. Interactions will focus on revealing details on demand and visualizing comparisons. The new AI section provides a direct, interactive knowledge retrieval tool. -->
+    9. Contacto: New section for direct email inquiries.
+    This structure is chosen to guide the user logically from basic understanding to specific applications, economic considerations, and future outlook, making the comprehensive report content digestible and engaging. Interactions will focus on revealing details on demand and visualizing comparisons. The new Contact section provides a direct communication channel. -->
     <!-- Visualization & Content Choices:
     * Report Info: Panel Types (Sec 3, Table 1) -> Goal: Compare -> Viz: Bar chart (Chart.js) for Efficiency, Lifespan; Interactive HTML table/cards for details. Interaction: Select panel type to view details. Justification: Easy comparison of key metrics.
-    * Report Info: Funcionamiento (Sec 2) -> Goal: Explain -> Viz: HTML/CSS diagram of photovoltaic effect & system components. Interaction: Static visual flow. Justification: Clear visual explanation of core concepts.
-    * Report Info: Factores de Rendimiento (Sec 4, Table 2) -> Goal: Inform -> Viz: Line chart (Chart.js) for Temp vs. Efficiency; Text summaries for other factors. Interaction: Static chart. Justification: Visualize key performance influencer.
+    * Report Info: Funcionamiento (Sec 2) -> Goal: Explain -> Viz: HTML/CSS diagram with Unicode icons for photovoltaic effect & system components. Interaction: Static visual flow. Justification: Clear visual explanation of core concepts.
+    * Report Info: Factores de Rendimiento (Sec 4, Table 2) -> Goal: Inform -> Viz: Line chart (Chart.js) for Temp vs. Efficiency; Text summaries for other factors, enhanced with Unicode icons. Interaction: Static chart. Justification: Visualize key performance influencer.
     * Report Info: Plantas Solares (Sec 5, Table 3) -> Goal: Showcase Scale -> Viz: Bar chart (Chart.js) for Plant Capacities; List/cards for details. Interaction: Static chart. Justification: Illustrate magnitude of large projects.
-    * Report Info: Impacto Ambiental (Sec 6, Table 4) -> Goal: Summarize -> Viz: Bar chart (Chart.js) for conceptual lifecycle impacts (positive/negative per stage). Interaction: Static chart. Justification: Visual overview of environmental aspects.
-    * Report Info: Aspectos Económicos (Sec 7, Table 5) -> Goal: Analyze -> Viz: Bar chart (Chart.js) for Cost/ROI/Amortización by installation type. Interaction: Static chart. Justification: Clear financial comparison.
+    * Report Info: Impacto Ambiental (Sec 6, Table 4) -> Goal: Summarize -> Viz: Bar chart (Chart.js) for conceptual lifecycle impacts (positive/negative per stage), enhanced with Unicode icons. Interaction: Static chart. Justification: Visual overview of environmental aspects.
+    * Report Info: Aspectos Económicos (Sec 7, Table 5) -> Goal: Analyze -> Viz: Bar chart (Chart.js) for Cost/ROI/Amortización by installation type, enhanced with Unicode icons. Interaction: Static chart. Justification: Clear financial comparison.
     * Report Info: Textual Summaries (all sections) -> Goal: Inform/Contextualize -> Viz: Structured HTML with Tailwind, collapsible sections. Interaction: Expand/collapse for details. Justification: Manage information density.
-    * Report Info: User Questions (New Section) -> Goal: Provide direct answers -> Viz: Text input and output area. Interaction: User types question, clicks button, LLM provides answer. Justification: Offers on-demand, flexible information retrieval beyond pre-defined content. -->
+    * Report Info: User Questions (New Section) -> Goal: Provide direct contact -> Viz: HTML form linked to mailto. Interaction: User fills form, clicks submit to open email client. Justification: Offers a direct, reliable communication channel. -->
     <style>
         body { font-family: 'Inter', sans-serif; }
         .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
@@ -45,6 +46,8 @@
         .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 700px; border-radius: 0.5rem; position: relative; }
         .close-button { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
         .close-button:hover, .close-button:focus { color: black; text-decoration: none; cursor: pointer; }
+        .icon-large { font-size: 4rem; line-height: 1; margin-bottom: 0.5rem; }
+        .icon-medium { font-size: 3rem; line-height: 1; margin-bottom: 0.5rem; }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800">
@@ -62,7 +65,7 @@
                     <a href="#sostenibilidad" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="sostenibilidad">Sostenibilidad</a>
                     <a href="#economia" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="economia">Economía</a>
                     <a href="#futuro" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="futuro">Futuro</a>
-                    <a href="#asesor-ia" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="asesor-ia">Asesor IA ✨</a>
+                    <a href="#contacto" class="nav-link px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600" data-section="contacto">Contacto 📧</a>
                 </nav>
                 <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-200 hover:text-white hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                     <span class="sr-only">Abrir menú principal</span>
@@ -82,7 +85,7 @@
                 <a href="#sostenibilidad" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="sostenibilidad">Sostenibilidad</a>
                 <a href="#economia" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="economia">Economía</a>
                 <a href="#futuro" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="futuro">Futuro</a>
-                <a href="#asesor-ia" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="asesor-ia">Asesor IA ✨</a>
+                <a href="#contacto" class="nav-link block px-3 py-2 rounded-md text-base font-medium hover:bg-sky-600" data-section="contacto">Contacto 📧</a>
             </div>
         </div>
     </header>
@@ -90,18 +93,21 @@
     <main class="container mx-auto p-4 sm:p-6 lg:p-8">
         
         <section id="inicio" class="content-section active">
-            <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
+            <div class="bg-white shadow-xl rounded-lg p-6 mb-8 text-center">
                 <h2 class="text-3xl font-bold text-sky-700 mb-4">Bienvenido al Explorador de Energía Solar Fotovoltaica</h2>
+                <div class="flex justify-center items-center mb-6">
+                    <span class="icon-large text-amber-500">☀️</span>
+                </div>
                 <p class="text-lg mb-4">La energía solar fotovoltaica (FV) es una tecnología clave en la transición hacia un futuro energético más limpio y sostenible. Convierte la luz solar directamente en electricidad, ofreciendo una alternativa crucial a los combustibles fósiles.</p>
                 <p class="mb-4">Este explorador interactivo te guiará a través de los aspectos fundamentales de los paneles fotovoltaicos, desde su funcionamiento básico y los diferentes tipos existentes, hasta su impacto económico y ambiental, y las emocionantes innovaciones que están por venir. Utiliza la navegación para explorar cada sección y descubrir cómo la energía solar está transformando nuestro mundo.</p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                     <div class="bg-amber-100 p-4 rounded-lg shadow">
-                        <span class="text-4xl">☀️</span>
+                        <span class="text-4xl">✨</span>
                         <h3 class="font-semibold text-amber-700 mt-2">Fuente Limpia</h3>
                         <p class="text-sm text-slate-600">Genera electricidad sin emisiones directas.</p>
                     </div>
                     <div class="bg-emerald-100 p-4 rounded-lg shadow">
-                        <span class="text-4xl">💡</span>
+                        <span class="text-4xl">🚀</span>
                         <h3 class="font-semibold text-emerald-700 mt-2">Tecnología en Evolución</h3>
                         <p class="text-sm text-slate-600">Constante innovación para mayor eficiencia y menor costo.</p>
                     </div>
@@ -127,6 +133,9 @@
                         <li><strong class="text-amber-500">Creación de Corriente:</strong> Los electrones liberados fluyen, generando una corriente eléctrica (Corriente Continua - CC).</li>
                         <li><strong class="text-amber-500">Conversión a CA:</strong> Un inversor transforma la CC en Corriente Alterna (CA), utilizable en hogares y la red.</li>
                     </ol>
+                </div>
+                <div class="flex justify-center items-center mb-6">
+                    <span class="icon-large text-sky-500">⚡</span>
                 </div>
 
                 <div class="my-6 p-4 bg-sky-50 rounded-lg shadow">
@@ -205,8 +214,8 @@
                     <p class="text-center text-sm text-slate-500 mt-2">Comparación de rangos de eficiencia típicos. Las tecnologías emergentes pueden tener rangos más amplios y eficiencias de laboratorio más altas.</p>
                 </div>
 
-                <div id="panelTypesContainer" class="space-y-6">
-                </div>
+                <div id="panelTypesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
                 <p class="mt-6 text-sm italic text-slate-500">La elección del panel solar implica un equilibrio entre eficiencia, costo y durabilidad. No hay una solución única "superior"; la opción óptima depende de las prioridades de cada proyecto.</p>
             </div>
         </section>
@@ -231,7 +240,9 @@
             <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
                 <h2 class="text-3xl font-bold text-sky-700 mb-4">Factores que Influyen en el Rendimiento</h2>
                 <p class="text-lg mb-4">La eficiencia de un panel solar no solo depende de su tecnología, sino también de factores ambientales y de diseño. Comprenderlos es clave para optimizar la producción de energía.</p>
-
+                <div class="flex justify-center items-center mb-6">
+                    <span class="icon-large text-amber-500">📈</span>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="card bg-slate-50 p-5 rounded-lg shadow">
                         <h3 class="text-xl font-semibold text-sky-600 mb-2">☀️ Irradiación Solar</h3>
@@ -276,6 +287,9 @@
 
                     <div id="tradicionales" class="app-tab-content mt-6">
                         <h3 class="text-2xl font-semibold text-sky-600 mb-3">Residencial, Comercial e Industrial</h3>
+                        <div class="flex justify-center items-center mb-6">
+                            <span class="icon-large text-emerald-600">🏠</span>
+                        </div>
                         <p class="mb-4">En <strong class="text-amber-600">hogares</strong>, para autoconsumo (luces, electrodomésticos, climatización). En <strong class="text-amber-600">empresas e industrias</strong>, para reducir costos operativos en naves, procesamiento de alimentos, agricultura (riego, iluminación), etc.</p>
                         <h4 class="text-xl font-semibold text-sky-600 mt-4 mb-2">Sistemas Aislados (Off-Grid)</h4>
                         <p class="mb-1">Autosuficiencia energética total, cruciales para zonas rurales, remotas, granjas, caravanas. Requieren baterías.</p>
@@ -284,6 +298,9 @@
 
                     <div id="granEscala" class="app-tab-content mt-6" style="display:none;">
                         <h3 class="text-2xl font-semibold text-sky-600 mb-3">Plantas Solares a Gran Escala</h3>
+                        <div class="flex justify-center items-center mb-6">
+                            <span class="icon-large text-sky-700">🏭</span>
+                        </div>
                         <p class="mb-4">Grandes "granjas solares" que generan enormes cantidades de electricidad para la red, contribuyendo a la autosuficiencia energética y reducción de emisiones. China e India lideran este desarrollo.</p>
                         <div class="chart-container mx-auto h-72 md:h-96">
                             <canvas id="largeScalePlantsChart"></canvas>
@@ -294,6 +311,9 @@
 
                     <div id="innovadoras" class="app-tab-content mt-6" style="display:none;">
                         <h3 class="text-2xl font-semibold text-sky-600 mb-3">Aplicaciones Innovadoras</h3>
+                        <div class="flex justify-center items-center mb-6">
+                            <span class="icon-large text-amber-700">💡</span>
+                        </div>
                         <p class="mb-4">La industria solar busca constantemente integrar la tecnología en nuestra vida e infraestructuras de formas novedosas:</p>
                         <ul class="list-disc list-inside space-y-3">
                             <li><strong>Integración en Edificios (BIPV):</strong> Tejas solares, fachadas, ventanas fotovoltaicas. Generan energía y son parte del edificio.</li>
@@ -313,7 +333,9 @@
             <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
                 <h2 class="text-3xl font-bold text-sky-700 mb-4">Impacto Ambiental y Sostenibilidad</h2>
                 <p class="text-lg mb-4">Aunque es una energía limpia en su operación, es vital analizar el ciclo de vida completo de los paneles FV, desde su fabricación hasta su reciclaje.</p>
-
+                <div class="flex justify-center items-center mb-6">
+                    <span class="icon-large text-emerald-600">♻️</span>
+                </div>
                 <div class="mb-6">
                     <h3 class="text-xl font-semibold text-sky-600 mb-2 text-center">Huella de Carbono Comparativa (g CO2eq/kWh)</h3>
                     <div class="chart-container mx-auto h-64 md:h-80">
@@ -349,7 +371,9 @@
             <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
                 <h2 class="text-3xl font-bold text-sky-700 mb-4">Aspectos Económicos y Rentabilidad</h2>
                 <p class="text-lg mb-4">La viabilidad económica de la energía solar ha mejorado drásticamente, convirtiéndola en una inversión atractiva. Los costos bajan, el retorno de la inversión (ROI) es favorable, y los ahorros en la factura eléctrica son significativos.</p>
-
+                <div class="flex justify-center items-center mb-6">
+                    <span class="icon-large text-green-600">💰</span>
+                </div>
                 <div class="mb-8">
                     <h3 class="text-xl font-semibold text-sky-600 mb-2 text-center">Comparativa Económica (Estimaciones España)</h3>
                     <div class="chart-container mx-auto h-72 md:h-96">
@@ -404,7 +428,9 @@
             <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
                 <h2 class="text-3xl font-bold text-sky-700 mb-4">Tendencias Futuras e Innovaciones</h2>
                 <p class="text-lg mb-4">El sector fotovoltaico está en constante evolución, con avances que prometen sistemas aún más eficientes, accesibles y versátiles.</p>
-
+                <div class="flex justify-center items-center mb-6">
+                    <span class="icon-large text-purple-600">🔮</span>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div class="card bg-sky-50 p-5 rounded-lg shadow">
                         <h3 class="text-xl font-semibold text-sky-600 mb-2">🚀 Avances en Eficiencia y Costos</h3>
@@ -432,33 +458,37 @@
             </div>
         </section>
 
-        <section id="asesor-ia" class="content-section">
+        <section id="contacto" class="content-section">
             <div class="bg-white shadow-xl rounded-lg p-6 mb-8">
-                <h2 class="text-3xl font-bold text-sky-700 mb-4">Asesor Solar IA ✨: Pregúntale a nuestro Experto</h2>
-                <p class="text-lg mb-4">¿Tienes una pregunta específica sobre paneles fotovoltaicos, su instalación, mantenimiento, o cualquier otro aspecto? Nuestro asistente de IA está aquí para ayudarte. Solo escribe tu pregunta y obtén una respuesta concisa y clara.</p>
+                <h2 class="text-3xl font-bold text-sky-700 mb-4">Contacto 📧</h2>
+                <p class="text-lg mb-4">¿Tienes preguntas, sugerencias o quieres colaborar? ¡Nos encantaría escucharte!</p>
+                <p class="mb-4 text-slate-700">Rellena el siguiente formulario y, al enviarlo, se abrirá tu cliente de correo electrónico predeterminado con tu mensaje listo para ser enviado a nuestra dirección.</p>
                 
-                <div class="mb-4">
-                    <label for="solarQuestionInput" class="block text-slate-700 text-sm font-bold mb-2">Tu Pregunta:</label>
-                    <textarea id="solarQuestionInput" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline resize-y h-32" placeholder="Ej: ¿Cuál es la vida útil de un panel solar? o ¿Cómo afecta la nieve a la producción?"></textarea>
-                </div>
-                <button id="askSolarExpertBtn" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 ease-in-out">
-                    Preguntar al Experto Solar ✨
-                </button>
-                
-                <div id="solarLoadingIndicator" class="mt-4 text-amber-600 hidden">
-                    Cargando respuesta... por favor espera.
-                </div>
-
-                <div id="solarResponseArea" class="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200 shadow-inner text-slate-700 min-h-[100px]">
-                    <p class="text-slate-500 italic">Tu respuesta se mostrará aquí.</p>
-                </div>
+                <form id="contactForm" onsubmit="sendEmail(event)">
+                    <div class="mb-4">
+                        <label for="contactName" class="block text-slate-700 text-sm font-bold mb-2">Tu Nombre:</label>
+                        <input type="text" id="contactName" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Tu nombre" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="contactEmail" class="block text-slate-700 text-sm font-bold mb-2">Tu Correo Electrónico:</label>
+                        <input type="email" id="contactEmail" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="tu.email@ejemplo.com" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="contactMessage" class="block text-slate-700 text-sm font-bold mb-2">Tu Mensaje:</label>
+                        <textarea id="contactMessage" class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 leading-tight focus:outline-none focus:shadow-outline resize-y h-40" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                    </div>
+                    <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 ease-in-out">
+                        Enviar Mensaje
+                    </button>
+                </form>
+                <p id="formMessage" class="mt-4 text-sm text-emerald-600 hidden">¡Mensaje listo! Se abrirá tu cliente de correo.</p>
             </div>
         </section>
 
     </main>
 
     <footer class="bg-sky-800 text-sky-100 text-center p-6 mt-8">
-        <p>&copy; 2024 Explorador Interactivo de Paneles Fotovoltaicos. Basado en el "Estudio Exhaustivo sobre Paneles Fotovoltaicos".</p>
+        <p>&copy; 2024 Explorador Interactivo de Paneles Fotovoltaicos.</p>
         <p class="text-xs mt-1">Aplicación generada para fines ilustrativos y educativos.</p>
     </footer>
     
@@ -468,6 +498,7 @@
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
 
+        // Function to set the active content section and navigation link
         function setActiveSection(sectionId) {
             contentSections.forEach(section => {
                 if (section.id === sectionId) {
@@ -489,14 +520,17 @@
                     }
                 }
             });
+            // Scroll to the top of the page when changing sections
             window.scrollTo(0, 0);
         }
         
+        // Add event listeners to navigation links for smooth scrolling and section activation
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const sectionId = e.target.dataset.section;
                 setActiveSection(sectionId);
+                // Close mobile menu after selection
                 if (mobileMenu.classList.contains('block')) {
                     mobileMenu.classList.remove('block');
                     mobileMenu.classList.add('hidden');
@@ -504,42 +538,50 @@
             });
         });
 
+        // Toggle mobile menu visibility
         mobileMenuButton.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
             mobileMenu.classList.toggle('block');
         });
         
+        // Function to handle tab switching within sections (e.g., Applications)
         function openAppTab(evt, tabName) {
-            var i, tabcontent, tablinks;
+            let i, tabcontent, tablinks;
+            // Get all tab content elements within the same parent
             tabcontent = evt.currentTarget.closest('.mb-6').querySelectorAll(".app-tab-content");
             for (i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].style.display = "none";
             }
+            // Get all tab buttons within the same parent
             tablinks = evt.currentTarget.parentElement.querySelectorAll(".tab-button");
             for (i = 0; i < tablinks.length; i++) {
                 tablinks[i].classList.remove("active");
             }
+            // Display the selected tab content and set the button as active
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.classList.add("active");
         }
 
+        // Data for different panel types (image URLs removed, using only text/emojis)
         const panelTypesData = [
-            { name: "Monocristalino", material: "Silicio puro", features: "Estructura uniforme, color negro/azul oscuro, bordes redondeados", efficiency: "18-25%", lifespan: "25+", cost: "Alto", applications: "Espacio limitado (residencial/comercial), zonas de radiación variable, proyectos de alto rendimiento", advantages: "Alta eficiencia, mejor rendimiento en poca luz/altas temperaturas, larga vida útil", challenges: "Mayor costo inicial", efficiency_min: 18, efficiency_max: 25, lifespan_val: 25 },
-            { name: "Policristalino", material: "Fragmentos de silicio fundido", features: "Estructura menos uniforme, color azul, patrón irregular", efficiency: "15-20%", lifespan: "~20", cost: "Medio", applications: "Desplazado, pero viable con espacio abundante", advantages: "Menor costo de producción", challenges: "Menor eficiencia, mayor degradación", efficiency_min: 15, efficiency_max: 20, lifespan_val: 20 },
-            { name: "Película Delgada (Amorfo)", material: "Silicio amorfo", features: "Estructura irregular, flexible, ligero, sobre sustratos flexibles", efficiency: "6-13%", lifespan: "10-15", cost: "Bajo", applications: "Aplicaciones específicas (techos curvos, vehículos, fachadas), poca luz/sombra", advantages: "Flexibilidad, ligereza, integración arquitectónica, mejor coeficiente de temperatura", challenges: "Baja eficiencia, requiere más espacio, mayor degradación", efficiency_min: 6, efficiency_max: 13, lifespan_val: 12 },
-            { name: "Perovskita", material: "Perovskita", features: "Propiedades ópticas/electrónicas ideales, eficiente transporte de electrones", efficiency: "Hasta 24% (tándem), 45-50% (multiunión lab)", lifespan: "En desarrollo", cost: "Potencialmente bajo", applications: "No tradicionales (ropa inteligente, vehículos), integración arquitectónica", advantages: "Alta eficiencia, bajo costo de producción, flexibilidad, ligereza, adaptabilidad", challenges: "Durabilidad limitada (fuga de yodo), uso de plomo (se investigan alternativas)", efficiency_min: 20, efficiency_max: 24, lifespan_val: 5 },
-            { name: "Telururo de Cadmio (CdTe)", material: "CdTe", features: "Película delgada, heterounión p-n, sin marco de aluminio, TCO", efficiency: "Hasta 19%", lifespan: "Larga", cost: "Bajo", applications: "Aviones espaciales, granjas solares en climas cálidos, techos de VE", advantages: "Bajo costo de fabricación, mejor coeficiente de temperatura, utiliza luz dispersa", challenges: "Requiere más espacio por kW", efficiency_min: 15, efficiency_max: 19, lifespan_val: 20 },
-            { name: "CIGS", material: "Cobre, Indio, Galio, Selenio", features: "Película delgada", efficiency: "\"Bastante decente\"", lifespan: "N/A", cost: "N/A", applications: "Fachadas, ventanas, aplicaciones espaciales", advantages: "Facilidad de instalación, flexibilidad", challenges: "N/A", efficiency_min: 12, efficiency_max: 16, lifespan_val: 15 },
-            { name: "Bifacial", material: "Silicio (mono/poli)", features: "Captura luz por ambas caras (frontal y trasera), encapsulado vidrio-vidrio", efficiency: "Hasta 30% más que monofaciales", lifespan: "30+", cost: "Ligeramente más alto (disminuyendo)", applications: "Superficies reflectantes (nieve, techos blancos), toldos, pérgolas, autoconsumo industrial", advantages: "Mayor eficiencia, mejor aprovechamiento del espacio, mayor durabilidad, funciona a bajas temperaturas", challenges: "Mayor peso, montaje más complejo (disminuyendo)", efficiency_min: 20, efficiency_max: 26, lifespan_val: 30 }
+            { name: "Monocristalino", material: "Silicio puro", features: "Estructura uniforme, color negro/azul oscuro, bordes redondeados", efficiency: "18-25%", lifespan: "25+", cost: "Alto", applications: "Espacio limitado (residencial/comercial), zonas de radiación variable, proyectos de alto rendimiento", advantages: "Alta eficiencia, mejor rendimiento en poca luz/altas temperaturas, larga vida útil", challenges: "Mayor costo inicial", efficiency_min: 18, efficiency_max: 25, lifespan_val: 25, icon: "💎" },
+            { name: "Policristalino", material: "Fragmentos de silicio fundido", features: "Estructura menos uniforme, color azul, patrón irregular", efficiency: "15-20%", lifespan: "~20", cost: "Medio", applications: "Desplazado, pero viable con espacio abundante", advantages: "Menor costo de producción", challenges: "Menor eficiencia, mayor degradación", efficiency_min: 15, efficiency_max: 20, lifespan_val: 20, icon: "🧩" },
+            { name: "Película Delgada (Amorfo)", material: "Silicio amorfo", features: "Estructura irregular, flexible, ligero, sobre sustratos flexibles", efficiency: "6-13%", lifespan: "10-15", cost: "Bajo", applications: "Aplicaciones específicas (techos curvos, vehículos, fachadas), poca luz/sombra", advantages: "Flexibilidad, ligereza, integración arquitectónica, mejor coeficiente de temperatura", challenges: "Baja eficiencia, requiere más espacio, mayor degradación", efficiency_min: 6, efficiency_max: 13, lifespan_val: 12, icon: "🎞️" },
+            { name: "Perovskita", material: "Perovskita", features: "Propiedades ópticas/electrónicas ideales, eficiente transporte de electrones", efficiency: "Hasta 24% (tándem), 45-50% (multiunión lab)", lifespan: "En desarrollo", cost: "Potencialmente bajo", applications: "No tradicionales (ropa inteligente, vehículos), integración arquitectónica", advantages: "Alta eficiencia, bajo costo de producción, flexibilidad, ligereza, adaptabilidad", challenges: "Durabilidad limitada (fuga de yodo), uso de plomo (se investigan alternativas)", efficiency_min: 20, efficiency_max: 24, lifespan_val: 5, icon: "🧪" },
+            { name: "Telururo de Cadmio (CdTe)", material: "CdTe", features: "Película delgada, heterounión p-n, sin marco de aluminio, TCO", efficiency: "Hasta 19%", lifespan: "Larga", cost: "Bajo", applications: "Aviones espaciales, granjas solares en climas cálidos, techos de VE", advantages: "Bajo costo de fabricación, mejor coeficiente de temperatura, utiliza luz dispersa", challenges: "Requiere más espacio por kW", efficiency_min: 15, efficiency_max: 19, lifespan_val: 20, icon: "⚛️" },
+            { name: "CIGS", material: "Cobre, Indio, Galio, Selenio", features: "Película delgada", efficiency: "\"Bastante decente\"", lifespan: "N/A", cost: "N/A", applications: "Fachadas, ventanas, aplicaciones espaciales", advantages: "Facilidad de instalación, flexibilidad", challenges: "N/A", efficiency_min: 12, efficiency_max: 16, lifespan_val: 15, icon: "🔬" },
+            { name: "Bifacial", material: "Silicio (mono/poli)", features: "Captura luz por ambas caras (frontal y trasera), encapsulado vidrio-vidrio", efficiency: "Hasta 30% más que monofaciales", lifespan: "30+", cost: "Ligeramente más alto (disminuyendo)", applications: "Superficies reflectantes (nieve, techos blancos), toldos, pérgolas, autoconsumo industrial", advantages: "Mayor eficiencia, mejor aprovechamiento del espacio, mayor durabilidad, funciona a bajas temperaturas", challenges: "Mayor peso, montaje más complejo (disminuyendo)", efficiency_min: 20, efficiency_max: 26, lifespan_val: 30, icon: "↔️" }
         ];
 
+        // Populate panel types cards with data and icons
         function populatePanelTypes() {
             const container = document.getElementById('panelTypesContainer');
             container.innerHTML = '';
             panelTypesData.forEach(panel => {
                 const card = `
-                    <div class="card bg-slate-50 p-5 rounded-lg shadow border border-slate-200 hover:shadow-lg cursor-pointer" onclick="openPanelModal('${panel.name}')">
-                        <h3 class="text-xl font-semibold text-sky-600 mb-2">${panel.name}</h3>
+                    <div class="card bg-slate-50 p-5 rounded-lg shadow border border-slate-200 hover:shadow-lg cursor-pointer text-center" onclick="openPanelModal('${panel.name}')">
+                        <span class="icon-medium text-sky-600">${panel.icon}</span>
+                        <h3 class="text-xl font-semibold text-sky-700 mb-2">${panel.name}</h3>
                         <p class="text-sm text-slate-700 mb-1"><strong>Eficiencia:</strong> ${panel.efficiency}</p>
                         <p class="text-sm text-slate-700 mb-1"><strong>Vida Útil:</strong> ${panel.lifespan} años</p>
                         <p class="text-sm text-slate-700"><strong>Ideal para:</strong> ${panel.applications.substring(0,100)}...</p>
@@ -552,6 +594,7 @@
             });
         }
         
+        // Open modal with detailed panel information
         function openPanelModal(panelName) {
             const panel = panelTypesData.find(p => p.name === panelName);
             if (panel) {
@@ -568,10 +611,12 @@
             }
         }
 
+        // Close any given modal
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
         }
 
+        // Close modal when clicking outside of it
         window.onclick = function(event) {
             const modal = document.getElementById('panelDetailModal');
             if (event.target == modal) {
@@ -579,6 +624,7 @@
             }
         }
 
+        // Data for large scale solar plants
         const largeScalePlantsData = [
             { name: "Parque Solar Bhadla (India)", capacity: 2245, area: "N/A", impact: "Redujo costo electricidad solar India." },
             { name: "Parque Solar Desierto de Tengger (China)", capacity: 1510, area: "43 km²", impact: "Alimenta ~600.000 hogares." },
@@ -589,6 +635,7 @@
             { name: "Parque Ultra Mega Solar Kurnool (India)", capacity: 1000, area: "N/A", impact: "Alimenta casi toda el área en horas pico." }
         ];
 
+        // Populate large scale plants list
         function populateLargeScalePlants() {
             const container = document.getElementById('largeScalePlantsList');
             container.innerHTML = '';
@@ -603,58 +650,39 @@
                 container.innerHTML += card;
             });
         }
+        
+        // Function to handle email sending via mailto link
+        function sendEmail(event) {
+            event.preventDefault(); // Prevent default form submission
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const message = document.getElementById('contactMessage').value;
+            const formMessage = document.getElementById('formMessage');
 
-        async function askSolarExpert() {
-            const questionInput = document.getElementById('solarQuestionInput');
-            const responseArea = document.getElementById('solarResponseArea');
-            const loadingIndicator = document.getElementById('solarLoadingIndicator');
-            const userQuestion = questionInput.value.trim();
-
-            if (!userQuestion) {
-                responseArea.innerHTML = '<p class="text-red-500">Por favor, escribe tu pregunta.</p>';
-                return;
-            }
-
-            loadingIndicator.classList.remove('hidden');
-            responseArea.innerHTML = ''; // Clear previous response
-
-            try {
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: `Actúa como un experto en energía solar. Responde a la siguiente pregunta de forma concisa y clara en español: ${userQuestion}` }] });
-                const payload = { contents: chatHistory };
-                const apiKey = ""; 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    responseArea.innerHTML = `<p>${text}</p>`;
-                } else {
-                    responseArea.innerHTML = '<p class="text-red-500">Lo siento, no pude obtener una respuesta. Intenta reformular tu pregunta.</p>';
-                }
-            } catch (error) {
-                console.error('Error al llamar a la API de Gemini:', error);
-                responseArea.innerHTML = '<p class="text-red-500">Hubo un error al conectar con el asistente. Por favor, inténtalo de nuevo más tarde.</p>';
-            } finally {
-                loadingIndicator.classList.add('hidden');
+            if (name && email && message) {
+                const subject = encodeURIComponent(`Mensaje de ${name} desde Explorador Solar`);
+                const body = encodeURIComponent(`Nombre: ${name}\nCorreo: ${email}\n\nMensaje:\n${message}`);
+                window.location.href = `mailto:alegiacomelli@icloud.com?subject=${subject}&body=${body}`;
+                formMessage.classList.remove('hidden');
+                formMessage.innerText = '¡Mensaje listo! Se abrirá tu cliente de correo para enviarlo.';
+                document.getElementById('contactForm').reset(); // Clear the form
+            } else {
+                formMessage.classList.remove('hidden');
+                formMessage.classList.add('text-red-500');
+                formMessage.innerText = 'Por favor, rellena todos los campos.';
             }
         }
         
+        // Initialize the page and charts when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
-            setActiveSection('inicio');
-            populatePanelTypes();
-            populateLargeScalePlants();
+            setActiveSection('inicio'); // Set initial active section
+            populatePanelTypes(); // Populate panel types cards
+            populateLargeScalePlants(); // Populate large scale plants list
 
-            document.getElementById('askSolarExpertBtn').addEventListener('click', askSolarExpert);
+            // Add event listener for the contact form submission
+            document.getElementById('contactForm').addEventListener('submit', sendEmail);
 
+            // Chart.js for Panel Efficiency Comparison
             const panelEfficiencyCtx = document.getElementById('panelEfficiencyChart').getContext('2d');
             new Chart(panelEfficiencyCtx, {
                 type: 'bar',
@@ -682,6 +710,7 @@
                 }
             });
 
+            // Chart.js for Temperature Impact on Efficiency
             const temperatureEfficiencyCtx = document.getElementById('temperatureEfficiencyChart').getContext('2d');
             new Chart(temperatureEfficiencyCtx, {
                 type: 'line',
@@ -704,11 +733,12 @@
                 }
             });
             
+            // Chart.js for Large Scale Plants Capacity
             const largeScalePlantsCtx = document.getElementById('largeScalePlantsChart').getContext('2d');
             new Chart(largeScalePlantsCtx, {
                 type: 'bar',
                 data: {
-                    labels: largeScalePlantsData.map(p => p.name.split('(')[0].trim()), // Shorter names
+                    labels: largeScalePlantsData.map(p => p.name.split('(')[0].trim()), // Shorter names for labels
                     datasets: [{
                         label: 'Capacidad Instalada (MW)',
                         data: largeScalePlantsData.map(p => p.capacity),
@@ -720,12 +750,13 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    indexAxis: 'y',
+                    indexAxis: 'y', // Horizontal bar chart
                     scales: { x: { beginAtZero: true, title: { display: true, text: 'Capacidad (MW)' } } },
                     plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } }
                 }
             });
 
+            // Chart.js for Carbon Footprint Comparison
             const carbonFootprintCtx = document.getElementById('carbonFootprintChart').getContext('2d');
             new Chart(carbonFootprintCtx, {
                 type: 'bar',
@@ -733,7 +764,7 @@
                     labels: ['Carbón', 'Gas Natural', 'Solar Fotovoltaica', 'Nuclear', 'Eólica'],
                     datasets: [{
                         label: 'g CO2eq / kWh',
-                        data: [820, 490, 45, 12, 11], // Valores aproximados
+                        data: [820, 490, 45, 12, 11], // Approximate values
                         backgroundColor: [
                             'rgba(107, 114, 128, 0.7)', // gray-500
                             'rgba(156, 163, 175, 0.7)', // gray-400
@@ -759,12 +790,14 @@
                 }
             });
 
+            // Data for Economic Comparison Chart
             const economicData = {
                 labels: ['Residencial (Red)', 'Residencial (Aislado)', 'PYME', 'Gran Empresa'],
-                costo: [5100, 9600, 10000, 50000], // Estimaciones base
+                costo: [5100, 9600, 10000, 50000], // Base estimations
                 roi: [20, 14, 20, 20], // %
-                amortizacion: [5, 7, 4, 4] // años
+                amortizacion: [5, 7, 4, 4] // years
             };
+            // Chart.js for Economic Comparison
             const economicComparisonCtx = document.getElementById('economicComparisonChart').getContext('2d');
             new Chart(economicComparisonCtx, {
                 type: 'bar',
