@@ -7,26 +7,6 @@
     <meta name="description" content="Descubre todo sobre paneles fotovoltaicos, su funcionamiento, tipos, rendimiento, aplicaciones, impacto económico y futuro. ¡Tu guía interactiva de energía solar!">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Application Structure Plan: The SPA will use a thematic, multi-section layout navigated by a fixed top navigation bar. Key sections will include:
-    1. Inicio: Overview.
-    2. Fundamentos: How PV works, system components (visual diagram).
-    3. Tipos de Paneles: Interactive comparison of panel technologies (using Chart.js for efficiency/lifespan) and detailed views.
-    4. Rendimiento y Factores: Explanation of irradiation, temperature, orientation, shading with illustrative charts.
-    5. Aplicaciones Diversas: Showcasing residential, industrial, off-grid, large-scale (Chart.js for plant capacities), and innovative uses (BIPV, flotante, etc.) through categorized content and visuals.
-    6. Sostenibilidad: Lifecycle impact (Chart.js for conceptual impact stages) and recycling.
-    7. Economía Solar: Costs, ROI, savings (Chart.js for financial comparisons), and incentives.
-    8. Futuro de la Solar: Emerging tech and trends.
-    9. Contacto: New section for direct email inquiries.
-    This structure is chosen to guide the user logically from basic understanding to specific applications, economic considerations, and future outlook, making the comprehensive report content digestible and engaging. Interactions will focus on revealing details on demand and visualizing comparisons. The new Contact section provides a direct communication channel. -->
-    <!-- Visualization & Content Choices:
-    * Report Info: Panel Types (Sec 3, Table 1) -> Goal: Compare -> Viz: Bar chart (Chart.js) for Efficiency, Lifespan; Interactive HTML table/cards for details. Interaction: Select panel type to view details. Justification: Easy comparison of key metrics.
-    * Report Info: Funcionamiento (Sec 2) -> Goal: Explain -> Viz: HTML/CSS diagram with Unicode icons for photovoltaic effect & system components. Interaction: Static visual flow. Justification: Clear visual explanation of core concepts.
-    * Report Info: Factores de Rendimiento (Sec 4, Table 2) -> Goal: Inform -> Viz: Line chart (Chart.js) for Temp vs. Efficiency; Text summaries for other factors, enhanced with Unicode icons. Interaction: Static chart. Justification: Visualize key performance influencer.
-    * Report Info: Plantas Solares (Sec 5, Table 3) -> Goal: Showcase Scale -> Viz: Bar chart (Chart.js) for Plant Capacities; List/cards for details. Interaction: Static chart. Justification: Illustrate magnitude of large projects.
-    * Report Info: Impacto Ambiental (Sec 6, Table 4) -> Goal: Summarize -> Viz: Bar chart (Chart.js) for conceptual lifecycle impacts (positive/negative per stage), enhanced with Unicode icons. Interaction: Static chart. Justification: Visual overview of environmental aspects.
-    * Report Info: Aspectos Económicos (Sec 7, Table 5) -> Goal: Analyze -> Viz: Bar chart (Chart.js) for Cost/ROI/Amortización by installation type, enhanced with Unicode icons. Interaction: Static chart. Justification: Clear financial comparison.
-    * Report Info: Textual Summaries (all sections) -> Goal: Inform/Contextualize -> Viz: Structured HTML with Tailwind, collapsible sections. Interaction: Expand/collapse for details. Justification: Manage information density.
-    * Report Info: User Questions (New Section) -> Goal: Provide direct contact -> Viz: HTML form linked to mailto. Interaction: User fills form, clicks submit to open email client. Justification: Offers a direct, reliable communication channel. -->
     <style>
         body { font-family: 'Inter', sans-serif; }
         .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
@@ -49,20 +29,30 @@
         .icon-large { font-size: 4rem; line-height: 1; margin-bottom: 0.5rem; }
         .icon-medium { font-size: 3rem; line-height: 1; margin-bottom: 0.5rem; }
          .producto-imagen {
-    max-height: 180px; /* Puedes ajustar este valor si quieres un tamaño diferente */
-  }
-  /* Aquí pueden ir otros estilos que ya tengas */
-  .amazon-button {
-        min-width: 160px; /* Ajusta este valor según sea necesario */
-        display: inline-flex; /* Para alinear el icono y el texto */
-        align-items: center; /* Centrar verticalmente */
-        justify-content: center; /* Centrar horizontalmente */
-    }
-    .amazon-button svg {
-        margin-right: 0.5rem;
-    }
+            max-height: 180px; /* Puedes ajustar este valor si quieres un tamaño diferente */
+        }
+        /* Aquí pueden ir otros estilos que ya tengas */
+        .amazon-button {
+            min-width: 160px; /* Ajusta este valor según sea necesario */
+            display: inline-flex; /* Para alinear el icono y el texto */
+            align-items: center; /* Centrar verticalmente */
+            justify-content: center; /* Centrar horizontalmente */
+        }
+        .amazon-button svg {
+            margin-right: 0.5rem;
+        }
     </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17118880854"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-17118880854');
+    </script>
+
 </head>
+<body>
 <body class="bg-slate-100 text-slate-800">
 
     <header class="bg-sky-700 text-white shadow-lg sticky top-0 z-40">
