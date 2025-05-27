@@ -48,6 +48,19 @@
         .close-button:hover, .close-button:focus { color: black; text-decoration: none; cursor: pointer; }
         .icon-large { font-size: 4rem; line-height: 1; margin-bottom: 0.5rem; }
         .icon-medium { font-size: 3rem; line-height: 1; margin-bottom: 0.5rem; }
+         .producto-imagen {
+    max-height: 180px; /* Puedes ajustar este valor si quieres un tamaño diferente */
+  }
+  /* Aquí pueden ir otros estilos que ya tengas */
+  .amazon-button {
+        min-width: 160px; /* Ajusta este valor según sea necesario */
+        display: inline-flex; /* Para alinear el icono y el texto */
+        align-items: center; /* Centrar verticalmente */
+        justify-content: center; /* Centrar horizontalmente */
+    }
+    .amazon-button svg {
+        margin-right: 0.5rem;
+    }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800">
@@ -338,7 +351,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
             <div class="rounded-lg shadow-md overflow-hidden">
-                <img src="Conector_Y.jpg" alt="Conectores Solares (Y o MC4)" class="w-full h-auto object-cover rounded-t-lg">
+                <img src="Conector_Y.jpg" alt="Conectores Solares (Y o MC4)" class="producto-imagen w-full h-auto object-contain rounded-t-lg">
                 <div class="p-4">
                     <h3 class="font-semibold text-xl text-sky-600 mb-1">Conectores Solares (Y o MC4)</h3>
                     <p class="text-sm text-slate-600 mb-2">Imprescindibles para la conexión en paralelo o en serie de paneles solares. Aseguran una conexión eléctrica segura y eficiente entre los módulos.</p>
@@ -352,7 +365,7 @@
             </div>
 
             <div class="rounded-lg shadow-md overflow-hidden">
-                <img src="Cable_solar.jpg" alt="Cables de Extensión Solar" class="w-full h-auto object-cover rounded-t-lg">
+                <img src="Cable_solar.jpg" alt="Cables de Extensión Solar" class="producto-imagen w-full h-auto object-contain rounded-t-lg">
                 <div class="p-4">
                     <h3 class="font-semibold text-xl text-sky-600 mb-1">Cables de Extensión Solar</h3>
                     <p class="text-sm text-slate-600 mb-2">Cables resistentes a la intemperie y a los rayos UV, diseñados específicamente para la conexión entre paneles solares, el controlador de carga y otros componentes del sistema.</p>
@@ -366,7 +379,7 @@
             </div>
 
             <div class="rounded-lg shadow-md overflow-hidden">
-                <img src="Interruptor_magnetotermico.jpg" alt="Interruptores Magnetotérmicos" class="w-full h-auto object-cover rounded-t-lg">
+                <img src="Interruptor_magnetotermico.jpg" alt="Interruptores Magnetotérmicos" class="producto-imagen w-full h-auto object-contain rounded-t-lg">
                 <div class="p-4">
                     <h3 class="font-semibold text-xl text-sky-600 mb-1">Interruptores Magnetotérmicos</h3>
                     <p class="text-sm text-slate-600 mb-2">Dispositivos de seguridad esenciales para proteger el sistema solar contra sobrecargas y cortocircuitos, tanto en el lado de corriente continua (CC) como en el de corriente alterna (CA).</p>
@@ -380,7 +393,7 @@
             </div>
 
             <div class="rounded-lg shadow-md overflow-hidden">
-                <img src="Controlador_carga.jpg" alt="Controladores de Carga Solar (PWM o MPPT)" class="w-full h-auto object-contain rounded-t-lg" style="max-height: 200px;">
+                <img src="Controlador_carga.jpg" alt="Controladores de Carga Solar (PWM o MPPT)" class="producto-imagen w-full h-auto object-contain rounded-t-lg">
                 <div class="p-4">
                     <h3 class="font-semibold text-xl text-sky-600 mb-1">Controladores de Carga Solar</h3>
                     <p class="text-sm text-slate-600 mb-2">Regulan el voltaje y la corriente que van desde los paneles solares a las baterías, optimizando la carga y protegiendo las baterías de sobrecarga o descarga excesiva (disponibles en tecnologías PWM y MPPT).</p>
@@ -394,7 +407,7 @@
             </div>
 
             <div class="rounded-lg shadow-md overflow-hidden">
-                <img src="Inversor_solar.jpg" alt="Inversores de Corriente" class="w-full h-auto object-contain rounded-t-lg" style="max-height: 200px;">
+                <img src="Inversor_solar.jpg" alt="Inversores de Corriente" class="producto-imagen w-full h-auto object-contain rounded-t-lg">
                 <div class="p-4">
                     <h3 class="font-semibold text-xl text-sky-600 mb-1">Inversores de Corriente</h3>
                     <p class="text-sm text-slate-600 mb-2">Convierten la energía de corriente continua (CC) generada por los paneles solares o almacenada en las baterías en corriente alterna (CA), que es la utilizada por la mayoría de los electrodomésticos y la red eléctrica.</p>
@@ -408,7 +421,7 @@
             </div>
 
             <div class="rounded-lg shadow-md overflow-hidden">
-                <img src="Multimetro.jpg" alt="Multímetro Digital" class="w-full h-auto object-contain rounded-t-lg" style="max-height: 200px;">
+                <img src="Multimetro.jpg" alt="Multímetro Digital" class="producto-imagen w-full h-auto object-contain rounded-t-lg">
                 <div class="p-4">
                     <h3 class="font-semibold text-xl text-sky-600 mb-1">Multímetro Digital</h3>
                     <p class="text-sm text-slate-600 mb-2">Herramienta esencial para la instalación, el mantenimiento y la resolución de problemas de sistemas solares. Permite medir voltaje, corriente, resistencia y continuidad.</p>
@@ -422,7 +435,7 @@
             </div>
 
             <div class="rounded-lg shadow-md overflow-hidden">
-                <img src="Crimpadora_reparacion.jpg" alt="Kit de Herramientas para Instalación Solar" class="w-full h-auto object-contain rounded-t-lg" style="max-height: 200px;">
+                <img src="Crimpadora_reparacion.jpg" alt="Kit de Herramientas para Instalación Solar" class="producto-imagen w-full h-auto object-contain rounded-t-lg">
                 <div class="p-4">
                     <h3 class="font-semibold text-xl text-sky-600 mb-1">Kit de Herramientas Solar</h3>
                     <p class="text-sm text-slate-600 mb-2">Un conjunto de herramientas que a menudo incluye una crimpadora para conectores MC4, pelacables y una llave para el montaje de los conectores, facilitando una instalación profesional y segura.</p>
@@ -436,7 +449,7 @@
             </div>
 
             <div class="rounded-lg shadow-md overflow-hidden">
-                <img src="Placa_portatil.jpg" alt="Kits de Paneles Solares" class="w-full h-auto object-contain rounded-t-lg" style="max-height: 200px;">
+                <img src="Placa_portatil.jpg" alt="Kits de Paneles Solares" class="producto-imagen w-full h-auto object-contain rounded-t-lg">
                 <div class="p-4">
                     <h3 class="font-semibold text-xl text-sky-600 mb-1">Kits de Paneles Solares</h3>
                     <p class="text-sm text-slate-600 mb-2">Soluciones integrales que pueden incluir uno o varios paneles solares, un controlador de carga y, a veces, una batería e inversor, ideales para pequeñas instalaciones o sistemas portátiles.</p>
@@ -450,7 +463,7 @@
             </div>
 
             <div class="rounded-lg shadow-md overflow-hidden">
-                <img src="Soporte_paneles.jpg" alt="Soportes para Paneles Solares" class="w-full h-auto object-contain rounded-t-lg" style="max-height: 200px;">
+                <img src="Soporte_paneles.jpg" alt="Soportes para Paneles Solares" class="producto-imagen w-full h-auto object-contain rounded-t-lg">
                 <div class="p-4">
                     <h3 class="font-semibold text-xl text-sky-600 mb-1">Soportes para Paneles Solares</h3>
                     <p class="text-sm text-slate-600 mb-2">Estructuras diseñadas para fijar los paneles solares a diferentes superficies (tejados, suelo, mástiles), permitiendo ajustar el ángulo de inclinación para una óptima captación de la luz solar a lo largo del año.</p>
